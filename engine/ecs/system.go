@@ -9,3 +9,11 @@ package ecs
 type System interface {
 	Update(w *World, dt float64)
 }
+
+type Renderer interface {
+	Render(w *World)
+}
+
+type EventSubscriber interface {
+	RegisterHandlers(w *World)
+}

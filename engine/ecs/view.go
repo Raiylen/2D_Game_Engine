@@ -34,7 +34,7 @@ func (v View2[A, B]) Each(f func(e EntityID, a *A, b *B)) {
 			if !v.poolB.has(e) {
 				continue
 			}
-			Bidx := v.poolB.sparse[e]
+			Bidx := v.poolB.sparse[e.Index()]
 			f(e, &v.poolA.dense[i], &v.poolB.dense[Bidx])
 		}
 	} else {
@@ -42,7 +42,7 @@ func (v View2[A, B]) Each(f func(e EntityID, a *A, b *B)) {
 			if !v.poolA.has(e) {
 				continue
 			}
-			Aidx := v.poolA.sparse[e]
+			Aidx := v.poolA.sparse[e.Index()]
 			f(e, &v.poolA.dense[Aidx], &v.poolB.dense[i])
 		}
 	}
@@ -72,8 +72,8 @@ func (v View3[A, B, C]) Each(f func(e EntityID, a *A, b *B, c *C)) {
 			if !v.poolB.has(e) || !v.poolC.has(e) {
 				continue
 			}
-			Bidx := v.poolB.sparse[e]
-			Cidx := v.poolC.sparse[e]
+			Bidx := v.poolB.sparse[e.Index()]
+			Cidx := v.poolC.sparse[e.Index()]
 			f(e, &v.poolA.dense[i], &v.poolB.dense[Bidx], &v.poolC.dense[Cidx])
 		}
 	} else if bSize <= aSize && bSize <= cSize {
@@ -81,8 +81,8 @@ func (v View3[A, B, C]) Each(f func(e EntityID, a *A, b *B, c *C)) {
 			if !v.poolA.has(e) || !v.poolC.has(e) {
 				continue
 			}
-			Aidx := v.poolA.sparse[e]
-			Cidx := v.poolC.sparse[e]
+			Aidx := v.poolA.sparse[e.Index()]
+			Cidx := v.poolC.sparse[e.Index()]
 			f(e, &v.poolA.dense[Aidx], &v.poolB.dense[i], &v.poolC.dense[Cidx])
 		}
 	} else {
@@ -90,8 +90,8 @@ func (v View3[A, B, C]) Each(f func(e EntityID, a *A, b *B, c *C)) {
 			if !v.poolA.has(e) || !v.poolB.has(e) {
 				continue
 			}
-			Aidx := v.poolA.sparse[e]
-			Bidx := v.poolB.sparse[e]
+			Aidx := v.poolA.sparse[e.Index()]
+			Bidx := v.poolB.sparse[e.Index()]
 			f(e, &v.poolA.dense[Aidx], &v.poolB.dense[Bidx], &v.poolC.dense[i])
 		}
 	}

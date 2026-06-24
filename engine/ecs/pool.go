@@ -27,8 +27,8 @@ type pool interface {
 // This is the same structure EnTT's storage<T> uses internally.
 type typedPool[T any] struct {
 	dense         []T        // the actual component values, tightly packed
-	denseEntities []EntityID // mirrors dense, but each index is the entityID
-	sparse        []int      // sparse[entityID] -> index into dense, or -1
+	denseEntities []EntityID // mirrors dense, but each index is the full 64-bit EntityID
+	sparse        []int      // sparse[entityID] -> index into dense, or -1 (e.Index(), not raw EntityID)
 }
 
 func NewTypedPool[T any]() *typedPool[T] {
@@ -42,10 +42,11 @@ func NewTypedPool[T any]() *typedPool[T] {
 // grow expands sparse so index e is valid, initializing new slots to -1
 // (meaning "no component").
 func (s *typedPool[T]) grow(e EntityID) {
-	if int(e) < len(s.sparse) {
+	idx := int(e.Index()) // use index, not raw 64-bit EntityId
+	if idx < len(s.sparse) {
 		return
 	}
-	newLen := int(e) + 1
+	newLen := idx + 1
 	newCap := len(s.sparse) * 2
 	if newLen > newCap {
 		newCap = newLen
@@ -62,11 +63,11 @@ func (s *typedPool[T]) grow(e EntityID) {
 // (AddComponent, SetComponent) don't need to distinguish the two cases.
 func (s *typedPool[T]) set(e EntityID, component T) {
 	s.grow(e)
-	if idx := s.sparse[e]; idx != -1 {
+	if idx := s.sparse[e.Index()]; idx != -1 {
 		s.dense[idx] = component
 		return
 	}
-	s.sparse[e] = len(s.dense)
+	s.sparse[e.Index()] = len(s.dense)
 	s.dense = append(s.dense, component)
 	s.denseEntities = append(s.denseEntities, e)
 }
@@ -78,7 +79,7 @@ func (s *typedPool[T]) get(e EntityID) (*T, bool) {
 	if !s.has(e) {
 		return nil, false
 	}
-	idx := s.sparse[e]
+	idx := s.sparse[e.Index()]
 	return &s.dense[idx], true
 }
 
@@ -89,19 +90,19 @@ func (s *typedPool[T]) remove(e EntityID) {
 	if !s.has(e) {
 		return
 	}
-	idx := s.sparse[e]
+	idx := s.sparse[e.Index()]
 
 	lastIdx := len(s.dense) - 1
 	lastEntity := s.denseEntities[lastIdx]
 
 	s.dense[idx] = s.dense[lastIdx]
 	s.denseEntities[idx] = lastEntity
-	s.sparse[lastEntity] = idx
+	s.sparse[lastEntity.Index()] = idx
 
 	s.dense = s.dense[:lastIdx]
 	s.denseEntities = s.denseEntities[:lastIdx]
 
-	s.sparse[e] = -1
+	s.sparse[e.Index()] = -1
 }
 
 // swap exchanges the dense-array contents at indices i and j, keeping
@@ -110,13 +111,14 @@ func (s *typedPool[T]) remove(e EntityID) {
 func (s *typedPool[T]) swap(i, j int) {
 	s.dense[i], s.dense[j] = s.dense[j], s.dense[i]
 	s.denseEntities[i], s.denseEntities[j] = s.denseEntities[j], s.denseEntities[i]
-	s.sparse[s.denseEntities[i]] = i
-	s.sparse[s.denseEntities[j]] = j
+	s.sparse[s.denseEntities[i].Index()] = i
+	s.sparse[s.denseEntities[j].Index()] = j
 }
 
 // has checks a pool's dense slice for an entity e
 func (s *typedPool[T]) has(e EntityID) bool {
-	return int(e) < len(s.sparse) && s.sparse[e] != -1
+	idx := int(e.Index())
+	return idx < len(s.sparse) && s.sparse[idx] != -1
 }
 
 // at returns the entity stored at a pool's dense position i
@@ -129,7 +131,7 @@ func (s *typedPool[T]) index(e EntityID) int {
 	if !s.has(e) {
 		return -1
 	}
-	return s.sparse[e]
+	return s.sparse[e.Index()]
 }
 
 // size returns how many entities a pool dense slice currently holds

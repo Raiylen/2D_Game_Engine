@@ -34,6 +34,7 @@ func (c *collisionSystem) Update(w *ecs.World, dt float64) {
 
 			if c.checkCollision(a, b) {
 				w.Logger.Info(fmt.Sprintf("Collision detected! %v, %v", a.entity, b.entity))
+				w.Events.Emit(ecs.Event{Name: "collision"})
 			}
 		}
 	}

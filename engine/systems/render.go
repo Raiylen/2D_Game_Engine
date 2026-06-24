@@ -28,6 +28,8 @@ func NewRenderSystem(renderer *sdl.Renderer, assets *assets.AssetManager) *rende
 	}
 }
 
+func (r *renderSystem) Update(w *ecs.World, dt float64) {} // no-op to to satisfy system interface
+
 func (r *renderSystem) Render(w *ecs.World) {
 	view := ecs.NewView2[components.Transform, components.Sprite](w)
 

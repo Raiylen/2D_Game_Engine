@@ -146,11 +146,12 @@ func (g *Game) Setup() error {
 	g.world.SetLogger(g.logger)
 	g.assets = assets.NewAssetManager(g.renderer)
 
+	g.world.RegisterSystem(systems.NewDamageSystem())
 	g.world.RegisterSystem(systems.NewMovementSystem())
 	g.world.RegisterSystem(systems.NewAnimationSystem())
 	g.world.RegisterSystem(systems.NewCollisionSystem())
-	g.world.RegisterRender(systems.NewRenderSystem(g.renderer, g.assets))
-	g.world.RegisterRender(systems.NewDebugRenderSystem(g.renderer))
+	g.world.RegisterSystem(systems.NewRenderSystem(g.renderer, g.assets))
+	g.world.RegisterSystem(systems.NewDebugRenderSystem(g.renderer))
 
 	return g.loadLevel()
 }

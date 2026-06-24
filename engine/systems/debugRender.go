@@ -8,7 +8,6 @@ import (
 
 type debugRenderSystem struct {
 	renderer *sdl.Renderer
-	enabled  bool
 }
 
 func NewDebugRenderSystem(renderer *sdl.Renderer) *debugRenderSystem {
@@ -17,7 +16,9 @@ func NewDebugRenderSystem(renderer *sdl.Renderer) *debugRenderSystem {
 	}
 }
 
-func (r *debugRenderSystem) Render(w *ecs.World) {
+func (d *debugRenderSystem) Update(w *ecs.World, dt float64) {}
+
+func (d *debugRenderSystem) Render(w *ecs.World) {
 	if !w.Flags["debug"] {
 		return
 	}
@@ -29,11 +30,7 @@ func (r *debugRenderSystem) Render(w *ecs.World) {
 			W: int32(box.Width),
 			H: int32(box.Height),
 		}
-		r.renderer.SetDrawColor(255, 0, 0, 255)
-		r.renderer.DrawRect(&srcRect)
+		d.renderer.SetDrawColor(255, 0, 0, 255)
+		d.renderer.DrawRect(&srcRect)
 	})
-}
-
-func (r *debugRenderSystem) Toggle() {
-	r.enabled = !r.enabled
 }

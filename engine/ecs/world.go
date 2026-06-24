@@ -1,17 +1,19 @@
 package ecs
 
 import (
-// "fmt"
+	"fmt"
 )
 
 // World owns all entities and a single Registry holding every
 // component pool.
 type World struct {
 	entities      []entity
+	generations   []uint32   // mirrors entities slice but tracks entity generations
 	destroyQueue  []EntityID // entities to be destroyed
 	freedEntities []EntityID // entityIDs made availabble after destrution
-	nextID        EntityID
+	nextIndex     uint32
 	Registry      *Registry // exposed to allow direct access - may change
+	Events        *EventBus
 	systems       []System
 	renders       []Renderer
 	Logger        Logger
@@ -20,10 +22,12 @@ type World struct {
 
 func NewWorld() *World {
 	return &World{
-		entities: []entity{},
-		Registry: NewRegistry(),
-		Logger:   defaultLogger{},
-		Flags:    map[string]bool{},
+		entities:    []entity{},
+		generations: []uint32{},
+		Registry:    NewRegistry(),
+		Events:      NewEventBus(),
+		Logger:      defaultLogger{},
+		Flags:       map[string]bool{},
 	}
 }
 
@@ -33,16 +37,30 @@ func (w *World) Update(dt float64) {
 	for _, sys := range w.systems {
 		sys.Update(w, dt)
 	}
+	w.Events.HandleEvents()
 	// delete any entities in the queue
 	for _, e := range w.destroyQueue {
-		if w.entities[e].destroyed {
-			continue // already removed -- avoids double-freeing the ID
-		}
-		w.entities[e].destroyed = true
-		w.Registry.RemoveEntity(e)
-		w.freedEntities = append(w.freedEntities, e)
+		w.destroy(e)
 	}
 	w.destroyQueue = w.destroyQueue[:0]
+}
+
+func (w *World) destroy(e EntityID) {
+	idx := e.Index()
+	if int(idx) >= len(w.generations) || w.generations[idx] != e.Gen() {
+		w.Logger.Warn("DestroyEntity called with stale or invalid EntityID -- ignored")
+		return
+	}
+	w.generations[idx]++
+	w.Registry.RemoveEntity(e)
+
+	recycled := NewEntityID(idx, w.generations[idx])
+	w.freedEntities = append(w.freedEntities, recycled)
+}
+
+func (w *World) IsAlive(e EntityID) bool {
+	idx := e.Index()
+	return int(idx) < len(w.generations) && w.generations[idx] == e.Gen()
 }
 
 func (w *World) Render() {
@@ -53,10 +71,12 @@ func (w *World) Render() {
 
 func (w *World) RegisterSystem(s System) {
 	w.systems = append(w.systems, s)
-}
-
-func (w *World) RegisterRender(r Renderer) {
-	w.renders = append(w.renders, r)
+	if renderer, ok := s.(Renderer); ok {
+		w.renders = append(w.renders, renderer)
+	}
+	if subscriber, ok := s.(EventSubscriber); ok {
+		subscriber.RegisterHandlers(w)
+	}
 }
 
 func (w *World) SetLogger(l Logger) {
@@ -65,15 +85,20 @@ func (w *World) SetLogger(l Logger) {
 
 func (w *World) NewEntity() EntityID {
 	if n := len(w.freedEntities); n > 0 {
+		// generation was already bumped at
+		// destroy time, so the ID stored in
+		// freedEntities is ready to use.
 		id := w.freedEntities[n-1]
 		w.freedEntities = w.freedEntities[:n-1]
-		w.entities[id] = entity{id: id}
-		// w.Logger.Info(fmt.Sprintf("entity %d created (recycled)", id))
+		w.entities[id.Index()] = entity{id: id}
+		w.Logger.Info(fmt.Sprintf("entity %d created (recycled)", id))
 		return id
 	}
-	id := w.nextID
+	idx := w.nextIndex
+	id := NewEntityID(idx, 0)
+	w.generations = append(w.generations, 0)
 	w.entities = append(w.entities, entity{id: id})
-	w.nextID++
+	w.nextIndex++
 	// w.Logger.Info(fmt.Sprintf("entity %d created", id))
 	return id
 }
