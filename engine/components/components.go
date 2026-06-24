@@ -1,17 +1,39 @@
 package components
 
-type CompSig uint64
-
-// create unique bit position for each component (up to 64 component)
-const (
-	PositionSig CompSig = 1 << iota // 1
-	VelocitySig                     // 2
+import (
+// "github.com/veandco/go-sdl2/sdl"
 )
 
-type Position struct {
-	X, Y float64
+type Transform struct {
+	X, Y     float64
+	Scale    float64
+	Rotation float64
 }
 
-type Velocity struct {
+type RigidBody struct {
 	DX, DY float64
+}
+
+type Sprite struct {
+	Width      int
+	Height     int
+	SourcePosX int
+	SourcePosY int
+	AssetID    string
+	Layer      int
+}
+
+type Animation struct {
+	NumFrames    int
+	CurrentFrame int
+	FrameRate    int
+	StartTime    int
+	Loop         bool
+}
+
+type BoxCollider struct {
+	Width   int
+	Height  int
+	OffsetX int
+	OffsetY int
 }

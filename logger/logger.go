@@ -30,31 +30,43 @@ type logEntry struct {
 	message string
 }
 
-var logs []logEntry
+type Logger struct {
+	logs []logEntry
+}
 
-func Info(info string) {
+func NewLogger() *Logger {
+	return &Logger{logs: []logEntry{}}
+}
+
+func (l *Logger) Info(info string) {
 	timeNow := time.Now().Format(time.DateTime)
 	message := fmt.Sprintf("%sINFO: | %v — %s%s\n", bGreen, timeNow, info, reset)
 	fmt.Fprint(os.Stderr, message)
 
 	entry := logEntry{logType: logInfo, message: message}
-	logs = append(logs, entry)
+	l.logs = append(l.logs, entry)
 }
 
-func Warn(warning string) {
+func (l *Logger) Warn(warning string) {
 	timeNow := time.Now().Format(time.DateTime)
 	message := fmt.Sprintf("%sWARN: | %v — %s%s\n", bYellow, timeNow, warning, reset)
 	fmt.Fprint(os.Stderr, message)
 
-	entry := logEntry{logType: logInfo, message: message}
-	logs = append(logs, entry)
+	entry := logEntry{logType: logWarning, message: message}
+	l.logs = append(l.logs, entry)
 }
 
-func Err(error error) {
+func (l *Logger) Err(error error) {
 	timeNow := time.Now().Format(time.DateTime)
 	message := fmt.Sprintf("%sERR: | %v — %s%s\n", bRed, timeNow, error, reset)
 	fmt.Fprintf(os.Stderr, message)
 
-	entry := logEntry{logType: logInfo, message: message}
-	logs = append(logs, entry)
+	entry := logEntry{logType: logError, message: message}
+	l.logs = append(l.logs, entry)
 }
+
+// var std = NewLogger()
+//
+// func Info(info string) { std.Info(info) }
+// func Warn(warn string) { std.Warn(warn) }
+// func Err(error error)  { std.Err(error) }
