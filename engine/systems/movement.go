@@ -15,7 +15,7 @@ func (m *movementSystem) Update(w *ecs.World, dt float64) {
 	view := ecs.NewView2[components.Transform, components.RigidBody](w)
 	// view := ecs.NewGroupView2[components.Position, components.Velocity](w)
 	view.Each(func(e ecs.EntityID, pos *components.Transform, vel *components.RigidBody) {
-		pos.X = pos.X + vel.DX*dt
 		pos.Y = pos.Y + vel.DY*dt
+		pos.X = pos.X + vel.DX*dt
 	})
 }

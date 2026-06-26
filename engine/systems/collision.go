@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/raiylen/2d_game_engine/engine/components"
 	"github.com/raiylen/2d_game_engine/engine/ecs"
+	"github.com/raiylen/2d_game_engine/engine/events"
 )
 
 type colliderEntry struct {
@@ -34,7 +35,7 @@ func (c *collisionSystem) Update(w *ecs.World, dt float64) {
 
 			if c.checkCollision(a, b) {
 				w.Logger.Info(fmt.Sprintf("Collision detected! %v, %v", a.entity, b.entity))
-				w.Events.Emit(ecs.Event{Name: "collision"})
+				w.Events.Emit(ecs.Event{Name: events.Collision, Data: events.CollisionEvent{A: a.entity, B: b.entity}})
 			}
 		}
 	}

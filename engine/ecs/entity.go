@@ -26,6 +26,10 @@ func (e EntityID) Gen() uint32 {
 
 // entity is currently just a wrapper around an ID. It's a placeholder
 // to store additional entity data that may be added.
+// the deleted bool is needed to stop event handlers from operating
+// on an entity that is already slated for deletion but the queue
+// hasn't been processed yet
 type entity struct {
-	id EntityID
+	id      EntityID
+	deleted bool
 }

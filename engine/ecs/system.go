@@ -14,6 +14,6 @@ type Renderer interface {
 	Render(w *World)
 }
 
-type EventSubscriber interface {
+type EventHandler interface {
 	RegisterHandlers(w *World)
 }

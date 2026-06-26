@@ -37,3 +37,10 @@ type BoxCollider struct {
 	OffsetX int
 	OffsetY int
 }
+
+type KeyboardControl struct {
+	UpVelocity    int
+	DownVelocity  int
+	RightVelocity int
+	LeftVelocity  int
+}

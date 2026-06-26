@@ -4,6 +4,7 @@ import ()
 
 type Event struct {
 	Name string
+	Data any
 }
 
 type Handler func(e Event)
@@ -29,18 +30,10 @@ func (eb *EventBus) RegisterHandler(eventName string, h Handler) {
 }
 
 func (eb *EventBus) HandleEvents() {
-	for len(eb.queue) > 0 {
-		currentEvent := eb.queue[0]
-		eb.queue = eb.queue[1:]
-
-		handlers := eb.handlers[currentEvent.Name]
-		for _, handler := range handlers {
-			handler(currentEvent)
+	for _, event := range eb.queue {
+		for _, h := range eb.handlers[event.Name] {
+			h(event)
 		}
 	}
-	eb.Reset()
-}
-
-func (eb *EventBus) Reset() {
 	eb.queue = eb.queue[:0]
 }

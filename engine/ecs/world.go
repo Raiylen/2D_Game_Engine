@@ -60,7 +60,9 @@ func (w *World) destroy(e EntityID) {
 
 func (w *World) IsAlive(e EntityID) bool {
 	idx := e.Index()
-	return int(idx) < len(w.generations) && w.generations[idx] == e.Gen()
+	return int(idx) < len(w.generations) &&
+		w.generations[idx] == e.Gen() &&
+		!w.entities[idx].deleted
 }
 
 func (w *World) Render() {
@@ -74,7 +76,7 @@ func (w *World) RegisterSystem(s System) {
 	if renderer, ok := s.(Renderer); ok {
 		w.renders = append(w.renders, renderer)
 	}
-	if subscriber, ok := s.(EventSubscriber); ok {
+	if subscriber, ok := s.(EventHandler); ok {
 		subscriber.RegisterHandlers(w)
 	}
 }
@@ -104,5 +106,6 @@ func (w *World) NewEntity() EntityID {
 }
 
 func (w *World) DestroyEntity(e EntityID) {
+	w.entities[e.Index()].deleted = true
 	w.destroyQueue = append(w.destroyQueue, e)
 }
