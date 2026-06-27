@@ -16,6 +16,10 @@ func (v View1[A]) Each(f func(e EntityID, a *A)) {
 	}
 }
 
+func (v View1[A]) Len() int {
+	return len(v.poolA.dense)
+}
+
 type View2[A, B any] struct {
 	poolA *typedPool[A]
 	poolB *typedPool[B]
@@ -93,6 +97,71 @@ func (v View3[A, B, C]) Each(f func(e EntityID, a *A, b *B, c *C)) {
 			Aidx := v.poolA.sparse[e.Index()]
 			Bidx := v.poolB.sparse[e.Index()]
 			f(e, &v.poolA.dense[Aidx], &v.poolB.dense[Bidx], &v.poolC.dense[i])
+		}
+	}
+}
+
+type View4[A, B, C, D any] struct {
+	poolA *typedPool[A]
+	poolB *typedPool[B]
+	poolC *typedPool[C]
+	poolD *typedPool[D]
+}
+
+func NewView4[A, B, C, D any](w *World) View4[A, B, C, D] {
+	return View4[A, B, C, D]{
+		poolA: GetPool[A](w.Registry),
+		poolB: GetPool[B](w.Registry),
+		poolC: GetPool[C](w.Registry),
+		poolD: GetPool[D](w.Registry),
+	}
+}
+
+func (v View4[A, B, C, D]) Each(f func(e EntityID, a *A, b *B, c *C, d *D)) {
+	aSize := len(v.poolA.denseEntities)
+	bSize := len(v.poolB.denseEntities)
+	cSize := len(v.poolC.denseEntities)
+	dSize := len(v.poolD.denseEntities)
+
+	if aSize <= bSize && aSize <= cSize && aSize <= dSize {
+		for i, e := range v.poolA.denseEntities {
+			if !v.poolB.has(e) || !v.poolC.has(e) || !v.poolD.has(e) {
+				continue
+			}
+			Bidx := v.poolB.sparse[e.Index()]
+			Cidx := v.poolC.sparse[e.Index()]
+			Didx := v.poolD.sparse[e.Index()]
+			f(e, &v.poolA.dense[i], &v.poolB.dense[Bidx], &v.poolC.dense[Cidx], &v.poolD.dense[Didx])
+		}
+	} else if bSize <= aSize && bSize <= cSize && bSize <= dSize {
+		for i, e := range v.poolB.denseEntities {
+			if !v.poolA.has(e) || !v.poolC.has(e) || !v.poolD.has(e) {
+				continue
+			}
+			Aidx := v.poolA.sparse[e.Index()]
+			Cidx := v.poolC.sparse[e.Index()]
+			Didx := v.poolD.sparse[e.Index()]
+			f(e, &v.poolA.dense[Aidx], &v.poolB.dense[i], &v.poolC.dense[Cidx], &v.poolD.dense[Didx])
+		}
+	} else if cSize <= dSize && cSize <= aSize && cSize <= bSize {
+		for i, e := range v.poolC.denseEntities {
+			if !v.poolA.has(e) || !v.poolB.has(e) || !v.poolD.has(e) {
+				continue
+			}
+			Aidx := v.poolA.sparse[e.Index()]
+			Bidx := v.poolB.sparse[e.Index()]
+			Didx := v.poolD.sparse[e.Index()]
+			f(e, &v.poolA.dense[Aidx], &v.poolB.dense[Bidx], &v.poolC.dense[i], &v.poolD.dense[Didx])
+		}
+	} else {
+		for i, e := range v.poolD.denseEntities {
+			if !v.poolA.has(e) || !v.poolB.has(e) || !v.poolC.has(e) {
+				continue
+			}
+			Aidx := v.poolA.sparse[e.Index()]
+			Bidx := v.poolB.sparse[e.Index()]
+			Cidx := v.poolC.sparse[e.Index()]
+			f(e, &v.poolA.dense[Aidx], &v.poolB.dense[Bidx], &v.poolC.dense[Cidx], &v.poolD.dense[i])
 		}
 	}
 }

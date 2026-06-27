@@ -25,7 +25,7 @@ func (g *Game) Init() error {
 	// }
 
 	if g.window, err = sdl.CreateWindow("", sdl.WINDOWPOS_CENTERED,
-		sdl.WINDOWPOS_CENTERED, g.windowWidth, g.windowHeight, sdl.WINDOW_SHOWN); err != nil {
+		sdl.WINDOWPOS_CENTERED, int32(g.windowWidth), int32(g.windowHeight), sdl.WINDOW_SHOWN); err != nil {
 		return fmt.Errorf("Error creating SDL_Window: %v", err)
 	}
 
@@ -34,7 +34,7 @@ func (g *Game) Init() error {
 		return fmt.Errorf("Error creating SDL_Renderer: %v", err)
 	}
 
-	if err = g.renderer.SetLogicalSize(g.windowWidth, g.windowHeight); err != nil {
+	if err = g.renderer.SetLogicalSize(int32(g.windowWidth), int32(g.windowHeight)); err != nil {
 		return fmt.Errorf("Error setting renderer logical size: %v", err)
 	}
 	g.lastTime = sdl.GetTicks()

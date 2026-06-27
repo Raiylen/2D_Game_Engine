@@ -1,6 +1,5 @@
 package game
 
 const (
-	windowTitle = ""
-	framerate   = 60
+	windowTitle string = ""
 )

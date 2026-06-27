@@ -20,6 +20,7 @@ func (g *Game) Setup() error {
 	g.world.RegisterSystem(systems.NewRenderSystem(g.renderer, g.assets))
 	g.world.RegisterSystem(systems.NewDebugRenderSystem(g.renderer))
 	g.world.RegisterSystem(systems.NewControlSystem())
+	g.world.RegisterSystem(systems.NewCameraSystem())
 
 	return g.loadLevel()
 }

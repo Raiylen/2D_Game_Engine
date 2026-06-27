@@ -14,8 +14,11 @@ type Game struct {
 	lastTime     uint32
 	deltaTime    float64
 	window       *sdl.Window
-	windowWidth  int32
-	windowHeight int32
+	windowWidth  int
+	windowHeight int
+	framerate    int
+	mapWidth     int
+	mapHeight    int
 	renderer     *sdl.Renderer
 	world        *ecs.World
 	assets       *assets.AssetManager
@@ -24,7 +27,7 @@ type Game struct {
 }
 
 func (g *Game) Run() {
-	frameDuration := uint32(1000 / framerate)
+	frameDuration := 1000 / uint32(g.framerate)
 
 	for g.isRunning {
 		frameStart := sdl.GetTicks()
@@ -63,6 +66,7 @@ func NewGame() *Game {
 		isFullscreen: false,
 		windowWidth:  1280,
 		windowHeight: 720,
+		framerate:    60,
 		logger:       logger.NewLogger(),
 	}
 	g.logger.Info("New game created!")

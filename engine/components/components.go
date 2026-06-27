@@ -21,6 +21,7 @@ type Sprite struct {
 	SourcePosY int
 	AssetID    string
 	Layer      int
+	IsFixed    bool
 }
 
 type Animation struct {
@@ -43,4 +44,12 @@ type KeyboardControl struct {
 	DownVelocity  int
 	RightVelocity int
 	LeftVelocity  int
+}
+
+type Camera struct {
+	X, Y      float64
+	Width     int
+	Height    int
+	MapWidth  int
+	MapHeight int
 }
