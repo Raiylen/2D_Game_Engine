@@ -53,3 +53,12 @@ type Camera struct {
 	MapWidth  int
 	MapHeight int
 }
+
+type Projectile struct {
+	DX, DY     float64
+	Frequency  float64
+	Duration   int
+	percDamage int
+	Timer      float64
+	IsFriendly bool
+}

@@ -23,6 +23,9 @@ func (g *Game) loadLevel() error {
 	if err = g.assets.AddTexture("radar-image", "assets/images/radar.png"); err != nil {
 		g.logger.Warn(err.Error())
 	}
+	if err = g.assets.AddTexture("bullet-image", "assets/images/bullet.png"); err != nil {
+		g.logger.Warn(err.Error())
+	}
 
 	cfg := TilemapConfig{
 		TileSize:   32,
@@ -58,10 +61,11 @@ func (g *Game) loadLevel() error {
 	// ecs.AddComponent(g.world.Registry, tank, components.BoxCollider{Width: 32, Height: 32})
 
 	truck := g.world.NewEntity()
-	ecs.AddComponent(g.world.Registry, truck, components.Transform{X: 20, Y: 20, Scale: 2.0})
-	ecs.AddComponent(g.world.Registry, truck, components.RigidBody{DX: 50, DY: 0})
+	ecs.AddComponent(g.world.Registry, truck, components.Transform{X: 20, Y: 20, Scale: 1.0})
+	ecs.AddComponent(g.world.Registry, truck, components.RigidBody{DX: 0, DY: 0})
 	ecs.AddComponent(g.world.Registry, truck, components.Sprite{AssetID: "truck-image", Width: 32, Height: 32, Layer: 11})
 	ecs.AddComponent(g.world.Registry, truck, components.BoxCollider{Width: 32, Height: 32})
+	ecs.AddComponent(g.world.Registry, truck, components.Projectile{DY: 50, Frequency: 5})
 
 	radar := g.world.NewEntity()
 	ecs.AddComponent(g.world.Registry, radar, components.Transform{X: float64(g.windowWidth - 74), Y: 10, Scale: 1.0})

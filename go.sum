@@ -1,2 +1,4 @@
+github.com/AllenDang/cimgui-go v1.5.0 h1:wnS4h1wWyE+3x59cHJnNSszka7pIR+pehim6ifOk9Rg=
+github.com/AllenDang/cimgui-go v1.5.0/go.mod h1:w7LE33Ex/ZOHqaFBWBHOIVMY4yLSwGLpJMUpX/fb5p4=
 github.com/veandco/go-sdl2 v0.4.40 h1:fZv6wC3zz1Xt167P09gazawnpa0KY5LM7JAvKpX9d/U=
 github.com/veandco/go-sdl2 v0.4.40/go.mod h1:OROqMhHD43nT4/i9crJukyVecjPNYYuCofep6SNiAjY=
