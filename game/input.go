@@ -25,13 +25,18 @@ func (g *Game) getInput() {
 					}
 				case sdl.SCANCODE_F3:
 					g.world.Flags["debug"] = !g.world.Flags["debug"]
+				case sdl.SCANCODE_SPACE:
+					g.world.Events.Emit(ecs.Event{
+						Name: events.KbFire,
+						Data: events.KbFireEvent{},
+					})
 				}
 			}
 		}
 	}
 	g.world.Events.Emit(ecs.Event{
-		Name: events.KbControl,
-		Data: events.KbControlEvent{
+		Name: events.PlayerControl,
+		Data: events.PlayerControlEvent{
 			Up:    g.keystate[sdl.SCANCODE_UP] == 1,
 			Down:  g.keystate[sdl.SCANCODE_DOWN] == 1,
 			Left:  g.keystate[sdl.SCANCODE_LEFT] == 1,

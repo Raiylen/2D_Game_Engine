@@ -19,8 +19,9 @@ func (g *Game) Setup() error {
 	g.world.RegisterSystem(systems.NewCollisionSystem())
 	g.world.RegisterSystem(systems.NewRenderSystem(g.renderer, g.assets))
 	g.world.RegisterSystem(systems.NewDebugRenderSystem(g.renderer))
-	g.world.RegisterSystem(systems.NewControlSystem())
+	g.world.RegisterSystem(systems.NewPlayerSystem())
 	g.world.RegisterSystem(systems.NewCameraSystem())
+	g.world.RegisterSystem(systems.NewEmitterSystem())
 	g.world.RegisterSystem(systems.NewProjectileSystem())
 
 	return g.loadLevel()

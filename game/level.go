@@ -65,7 +65,7 @@ func (g *Game) loadLevel() error {
 	ecs.AddComponent(g.world.Registry, truck, components.RigidBody{DX: 0, DY: 0})
 	ecs.AddComponent(g.world.Registry, truck, components.Sprite{AssetID: "truck-image", Width: 32, Height: 32, Layer: 11})
 	ecs.AddComponent(g.world.Registry, truck, components.BoxCollider{Width: 32, Height: 32})
-	ecs.AddComponent(g.world.Registry, truck, components.Projectile{DY: 50, Frequency: 5})
+	ecs.AddComponent(g.world.Registry, truck, components.Emitter{DY: 100, Frequency: 2, ProjDuration: 5, ProjPercDamage: 10})
 
 	radar := g.world.NewEntity()
 	ecs.AddComponent(g.world.Registry, radar, components.Transform{X: float64(g.windowWidth - 74), Y: 10, Scale: 1.0})
@@ -77,8 +77,10 @@ func (g *Game) loadLevel() error {
 	ecs.AddComponent(g.world.Registry, chopper, components.RigidBody{DX: 0, DY: 0})
 	ecs.AddComponent(g.world.Registry, chopper, components.Sprite{AssetID: "chopper-image", Width: 32, Height: 32, Layer: 11})
 	ecs.AddComponent(g.world.Registry, chopper, components.Animation{NumFrames: 2, CurrentFrame: 1, FrameRate: 10, Loop: true})
-	ecs.AddComponent(g.world.Registry, chopper, components.KeyboardControl{UpVelocity: 100, DownVelocity: 100, RightVelocity: 100, LeftVelocity: 100})
+	ecs.AddComponent(g.world.Registry, chopper, components.Player{FacingX: 0, FacingY: -1, UpVelocity: 100, DownVelocity: 100, RightVelocity: 100, LeftVelocity: 100})
 	ecs.AddComponent(g.world.Registry, chopper, components.Camera{Width: g.windowWidth, Height: g.windowHeight, MapWidth: g.mapWidth, MapHeight: g.mapHeight})
+	ecs.AddComponent(g.world.Registry, chopper, components.Health{HealthPerc: 100})
+	ecs.AddComponent(g.world.Registry, chopper, components.Emitter{Frequency: 0, ProjSpeed: 150, ProjDuration: 5, ProjPercDamage: 10})
 
 	return nil
 }

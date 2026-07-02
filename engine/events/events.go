@@ -5,8 +5,9 @@ import (
 )
 
 const (
-	Collision = "collision"
-	KbControl = "kbcontrol"
+	Collision     = "collision"
+	PlayerControl = "playercontrol"
+	KbFire        = "kbfire"
 )
 
 type CollisionEvent struct {
@@ -14,9 +15,12 @@ type CollisionEvent struct {
 	B ecs.EntityID
 }
 
-type KbControlEvent struct {
+type PlayerControlEvent struct {
 	Up    bool
 	Down  bool
 	Left  bool
 	Right bool
+}
+
+type KbFireEvent struct {
 }

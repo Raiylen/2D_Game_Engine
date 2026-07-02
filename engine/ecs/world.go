@@ -93,7 +93,7 @@ func (w *World) NewEntity() EntityID {
 		id := w.freedEntities[n-1]
 		w.freedEntities = w.freedEntities[:n-1]
 		w.entities[id.Index()] = entity{id: id}
-		w.Logger.Info(fmt.Sprintf("entity %d created (recycled)", id))
+		w.Logger.Info(fmt.Sprintf("entity %d created (recycled)", id.Index()))
 		return id
 	}
 	idx := w.nextIndex
@@ -101,7 +101,7 @@ func (w *World) NewEntity() EntityID {
 	w.generations = append(w.generations, 0)
 	w.entities = append(w.entities, entity{id: id})
 	w.nextIndex++
-	// w.Logger.Info(fmt.Sprintf("entity %d created", id))
+	w.Logger.Info(fmt.Sprintf("entity %d created", id.Index()))
 	return id
 }
 
